@@ -1,0 +1,2 @@
+SELECT product_name FROM ORDERS, CUSTOMERS
+WHERE CUSTOMERS.name=:name AND CUSTOMERS.id = ORDERS.customer_id;
