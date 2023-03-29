@@ -1,7 +1,7 @@
-package com.example.dao;
+package com.example.dao.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -13,15 +13,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-public class Repo {
+public class RepositoryCustomers {
     private final NamedParameterJdbcTemplate template;
+    private final String sqlQuery;
 
-    @Autowired
-    public Repo(NamedParameterJdbcTemplate template) {
+    public RepositoryCustomers(NamedParameterJdbcTemplate template) {
         this.template = template;
+        this.sqlQuery = read("productName.sql");
     }
-
-    private String sqlQuery = read("productName.sql");
 
     private static String read(String scriptFileName) {
         try (InputStream is = new ClassPathResource(scriptFileName).getInputStream();
@@ -32,11 +31,8 @@ public class Repo {
         }
     }
 
-    public List<List<String>> userName(String name) {
-        Map<String, String> nameParam = new HashMap<>();
-        nameParam.put("name", name);
-        List<List<String>> users;
-        users = template.query(sqlQuery, nameParam, new Maprow());
-        return users;
+    public List<String> userName(String name) {
+        MapSqlParameterSource nameParam = new MapSqlParameterSource("name", name);
+        return template.queryForList(sqlQuery, nameParam, String.class);
     }
 }
